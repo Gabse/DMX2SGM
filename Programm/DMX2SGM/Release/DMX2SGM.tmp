@@ -1,18 +1,18 @@
 <ASSEMBLER_INFO>
- <VERSION>2.2.7</VERSION>
+ <VERSION>2.2.8</VERSION>
  <DEVICE>"ATtiny1634"</DEVICE>
- <WORKING_DIR>C:\Users\Gabriel\Documents\Atmel Studio\7.0\DMX2SGM\DMX2SGM\Release</WORKING_DIR>
+ <WORKING_DIR>G:\DMX2SGM\Programm\DMX2SGM\Release</WORKING_DIR>
  <INCLUDE_PATH>
-  <DIR>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATtiny_DFP\1.3.172\avrasm\inc</DIR>
+  <DIR>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATtiny_DFP\1.8.332\avrasm\inc</DIR>
   <DIR>C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avrassembler\Include</DIR>
   <DIR></DIR>
  </INCLUDE_PATH>
- <SOURCE_FILE>C:\Users\Gabriel\Documents\Atmel Studio\7.0\DMX2SGM\DMX2SGM\main.asm</SOURCE_FILE>
+ <SOURCE_FILE>G:\DMX2SGM\Programm\DMX2SGM\main.asm</SOURCE_FILE>
  <INCLUDED_FILES>
-  <FILE>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATtiny_DFP\1.3.172\avrasm\inc\tn1634def.inc</FILE>
+  <FILE>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATtiny_DFP\1.8.332\avrasm\inc\tn1634def.inc</FILE>
  </INCLUDED_FILES>
  <OBJECT_FILES>
-  <FILE>C:\Users\Gabriel\Documents\Atmel Studio\7.0\DMX2SGM\DMX2SGM\Release\DMX2SGM.obj</FILE>
+  <FILE>G:\DMX2SGM\Programm\DMX2SGM\Release\DMX2SGM.obj</FILE>
  </OBJECT_FILES>
  <HEX_FILES>
   <FILE>DMX2SGM.hex</FILE>
@@ -22,21 +22,21 @@
   <FILE>DMX2SGM.lss</FILE>
  </OUTPUT_FILES>
  <LABELS>
-  <main><FILE>C:\Users\Gabriel\Documents\Atmel Studio\7.0\DMX2SGM\DMX2SGM\main.asm</FILE><LINE>95</LINE></main>
-  <TC1CMA><FILE>C:\Users\Gabriel\Documents\Atmel Studio\7.0\DMX2SGM\DMX2SGM\main.asm</FILE><LINE>361</LINE></TC1CMA>
-  <USART0_OVERFLOW><FILE>C:\Users\Gabriel\Documents\Atmel Studio\7.0\DMX2SGM\DMX2SGM\main.asm</FILE><LINE>248</LINE></USART0_OVERFLOW>
-  <USART1_OVERFLOW><FILE>C:\Users\Gabriel\Documents\Atmel Studio\7.0\DMX2SGM\DMX2SGM\main.asm</FILE><LINE>278</LINE></USART1_OVERFLOW>
-  <USI_OVERFLOW><FILE>C:\Users\Gabriel\Documents\Atmel Studio\7.0\DMX2SGM\DMX2SGM\main.asm</FILE><LINE>327</LINE></USI_OVERFLOW>
-  <clr_ram><FILE>C:\Users\Gabriel\Documents\Atmel Studio\7.0\DMX2SGM\DMX2SGM\main.asm</FILE><LINE>136</LINE></clr_ram>
-  <loop><FILE>C:\Users\Gabriel\Documents\Atmel Studio\7.0\DMX2SGM\DMX2SGM\main.asm</FILE><LINE>228</LINE></loop>
-  <SGM1DETEND><FILE>C:\Users\Gabriel\Documents\Atmel Studio\7.0\DMX2SGM\DMX2SGM\main.asm</FILE><LINE>257</LINE></SGM1DETEND>
-  <SGM1SEND><FILE>C:\Users\Gabriel\Documents\Atmel Studio\7.0\DMX2SGM\DMX2SGM\main.asm</FILE><LINE>264</LINE></SGM1SEND>
-  <SKIPNEXT><FILE>C:\Users\Gabriel\Documents\Atmel Studio\7.0\DMX2SGM\DMX2SGM\main.asm</FILE><LINE>301</LINE></SKIPNEXT>
-  <FRAMEERROR><FILE>C:\Users\Gabriel\Documents\Atmel Studio\7.0\DMX2SGM\DMX2SGM\main.asm</FILE><LINE>308</LINE></FRAMEERROR>
-  <STARTBYTE><FILE>C:\Users\Gabriel\Documents\Atmel Studio\7.0\DMX2SGM\DMX2SGM\main.asm</FILE><LINE>318</LINE></STARTBYTE>
-  <ADDRESSLOW><FILE>C:\Users\Gabriel\Documents\Atmel Studio\7.0\DMX2SGM\DMX2SGM\main.asm</FILE><LINE>296</LINE></ADDRESSLOW>
-  <SGM2DETEND><FILE>C:\Users\Gabriel\Documents\Atmel Studio\7.0\DMX2SGM\DMX2SGM\main.asm</FILE><LINE>338</LINE></SGM2DETEND>
-  <SGM2SEND><FILE>C:\Users\Gabriel\Documents\Atmel Studio\7.0\DMX2SGM\DMX2SGM\main.asm</FILE><LINE>345</LINE></SGM2SEND>
-  <LEDON><FILE>C:\Users\Gabriel\Documents\Atmel Studio\7.0\DMX2SGM\DMX2SGM\main.asm</FILE><LINE>371</LINE></LEDON>
+  <MAIN><FILE>G:\DMX2SGM\Programm\DMX2SGM\main.asm</FILE><LINE>102</LINE></MAIN>
+  <TC1CMA><FILE>G:\DMX2SGM\Programm\DMX2SGM\main.asm</FILE><LINE>260</LINE></TC1CMA>
+  <SGM1_INTERRUPT><FILE>G:\DMX2SGM\Programm\DMX2SGM\main.asm</FILE><LINE>331</LINE></SGM1_INTERRUPT>
+  <DMX_INTERRUPT><FILE>G:\DMX2SGM\Programm\DMX2SGM\main.asm</FILE><LINE>273</LINE></DMX_INTERRUPT>
+  <SGM2_INTERRUPT><FILE>G:\DMX2SGM\Programm\DMX2SGM\main.asm</FILE><LINE>365</LINE></SGM2_INTERRUPT>
+  <clr_ram><FILE>G:\DMX2SGM\Programm\DMX2SGM\main.asm</FILE><LINE>149</LINE></clr_ram>
+  <loop><FILE>G:\DMX2SGM\Programm\DMX2SGM\main.asm</FILE><LINE>242</LINE></loop>
+  <SKIPNEXT><FILE>G:\DMX2SGM\Programm\DMX2SGM\main.asm</FILE><LINE>305</LINE></SKIPNEXT>
+  <FRAMEERROR><FILE>G:\DMX2SGM\Programm\DMX2SGM\main.asm</FILE><LINE>311</LINE></FRAMEERROR>
+  <STARTBYTE><FILE>G:\DMX2SGM\Programm\DMX2SGM\main.asm</FILE><LINE>321</LINE></STARTBYTE>
+  <ADDRESSLOW><FILE>G:\DMX2SGM\Programm\DMX2SGM\main.asm</FILE><LINE>296</LINE></ADDRESSLOW>
+  <NINCDMXH><FILE>G:\DMX2SGM\Programm\DMX2SGM\main.asm</FILE><LINE>301</LINE></NINCDMXH>
+  <SGM1DETEND><FILE>G:\DMX2SGM\Programm\DMX2SGM\main.asm</FILE><LINE>341</LINE></SGM1DETEND>
+  <SGM1SEND><FILE>G:\DMX2SGM\Programm\DMX2SGM\main.asm</FILE><LINE>349</LINE></SGM1SEND>
+  <SGM2DETEND><FILE>G:\DMX2SGM\Programm\DMX2SGM\main.asm</FILE><LINE>376</LINE></SGM2DETEND>
+  <SGM2SEND><FILE>G:\DMX2SGM\Programm\DMX2SGM\main.asm</FILE><LINE>384</LINE></SGM2SEND>
  </LABELS>
 </ASSEMBLER_INFO>

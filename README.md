@@ -2,6 +2,8 @@ DMX2SGM
 =
 DMX512 to Dual SGM256 Converter
 
+![license](https://img.shields.io/github/license/Gabse/DMX2SGM) ![language](https://img.shields.io/github/languages/top/Gabse/DMX2SGM)
+=
 This simple device converts a standard DMX512 Signal into two SGM256 signals.
 
 It lets you reuse your old SGM gear with almost any standard DMX controller on the market.

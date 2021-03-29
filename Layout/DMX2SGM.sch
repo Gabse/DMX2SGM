@@ -6,7 +6,7 @@ encoding utf-8
 Sheet 1 1
 Title "DMX2SGM"
 Date "13.09.2019"
-Rev "0.2"
+Rev "3"
 Comp "Gabs'e"
 Comment1 "CC BY-NC-SA"
 Comment2 ""
@@ -389,7 +389,7 @@ $EndComp
 Wire Wire Line
 	3950 4900 3950 5050
 Wire Wire Line
-	3050 3900 2700 3900
+	3050 3900 2900 3900
 Wire Wire Line
 	2700 4100 3050 4100
 Wire Wire Line
@@ -871,7 +871,6 @@ Wire Wire Line
 	1850 7100 1850 7250
 Wire Wire Line
 	1850 7250 2000 7250
-NoConn ~ 1400 6050
 Wire Wire Line
 	7550 5450 7450 5450
 Wire Wire Line
@@ -922,21 +921,6 @@ F 6 "VISHAY" H 2150 7250 50  0001 C CNN "Manuf"
 F 7 "MBA02040C2201FCT00" H 2150 7250 50  0001 C CNN "VPN"
 	1    2150 7250
 	0    1    1    0   
-$EndComp
-$Comp
-L DMX2SGM-rescue:AVR-ISP-6-Connector J1
-U 1 1 5D7D64E6
-P 1500 6550
-F 0 "J1" H 1221 6646 50  0000 R CNN
-F 1 "AVR-ISP-6" H 1221 6555 50  0000 R CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_2x03_P2.54mm_Vertical" V 1250 6600 50  0001 C CNN
-F 3 "https://cdn.amphenol-icc.com/media/wysiwyg/files/drawing/67996.pdf" H 225 6000 50  0001 C CNN
-F 4 "TME" H 1500 6550 50  0001 C CNN "Vendor"
-F 5 "67996-206HLF" H 1500 6550 50  0001 C CNN "MPN"
-F 6 "AMPHENOL" H 1500 6550 50  0001 C CNN "Manuf"
-F 7 "67996-206HLF" H 1500 6550 50  0001 C CNN "VPN"
-	1    1500 6550
-	1    0    0    -1  
 $EndComp
 $Comp
 L Device:Thermistor_PTC TH2
@@ -1421,7 +1405,6 @@ F 7 "C315C103K5R5TA" H 3200 7050 50  0001 C CNN "VPN"
 $EndComp
 Wire Wire Line
 	7050 4000 7150 4000
-NoConn ~ 2700 3800
 Wire Wire Line
 	6900 3200 6900 3300
 $Comp
@@ -1450,10 +1433,6 @@ F 7 "BD09AV" H 6500 2800 50  0001 C CNN "VPN"
 	1    6500 2800
 	1    0    0    -1  
 $EndComp
-Wire Bus Line
-	5300 2150 5300 3100
-Wire Bus Line
-	3600 2150 3600 3100
 Wire Wire Line
 	6050 6200 5800 6200
 Text GLabel 6050 6200 2    50   Output ~ 0
@@ -1473,4 +1452,43 @@ F 7 "MBA02040C3900FC100 " H 4950 6200 50  0001 C CNN "VPN"
 	1    4950 6200
 	0    1    1    0   
 $EndComp
+Wire Wire Line
+	2700 3800 2900 3800
+Wire Wire Line
+	2900 3800 2900 3900
+Connection ~ 2900 3900
+Wire Wire Line
+	2900 3900 2700 3900
+$Comp
+L DMX2SGM-rescue:AVR-ISP-6-Connector J1
+U 1 1 5D7D64E6
+P 1500 6550
+F 0 "J1" H 1221 6646 50  0000 R CNN
+F 1 "AVR-ISP-6" H 1221 6555 50  0000 R CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_2x03_P2.54mm_Vertical" V 1250 6600 50  0001 C CNN
+F 3 "https://cdn.amphenol-icc.com/media/wysiwyg/files/drawing/67996.pdf" H 225 6000 50  0001 C CNN
+F 4 "TME" H 1500 6550 50  0001 C CNN "Vendor"
+F 5 "67996-206HLF" H 1500 6550 50  0001 C CNN "MPN"
+F 6 "AMPHENOL" H 1500 6550 50  0001 C CNN "Manuf"
+F 7 "67996-206HLF" H 1500 6550 50  0001 C CNN "VPN"
+	1    1500 6550
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:+5VD #PWR?
+U 1 1 6062247A
+P 1400 5900
+F 0 "#PWR?" H 1400 5750 50  0001 C CNN
+F 1 "+5VD" H 1415 6073 50  0000 C CNN
+F 2 "" H 1400 5900 50  0001 C CNN
+F 3 "" H 1400 5900 50  0001 C CNN
+	1    1400 5900
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1400 5900 1400 6050
+Wire Bus Line
+	3600 2150 3600 3100
+Wire Bus Line
+	5300 2150 5300 3100
 $EndSCHEMATC

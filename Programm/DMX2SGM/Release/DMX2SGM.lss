@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.8  G:\DMX2SGM\Programm\DMX2SGM\main.asm Mon Mar 29 19:11:00 2021
+AVRASM ver. 2.2.7  D:\DMX2SGM\Programm\DMX2SGM\main.asm Sun Jul 24 18:32:02 2022
 
 [builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATtiny_DFP\1.8.332\avrasm\inc\tn1634def.inc'
 [builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATtiny_DFP\1.8.332\avrasm\inc\tn1634def.inc'
@@ -1035,7 +1035,7 @@ AVRASM ver. 2.2.8  G:\DMX2SGM\Programm\DMX2SGM\main.asm Mon Mar 29 19:11:00 2021
                                  //***********************************************************************************************                                                                                
                                  //                                                                                    
                                  //								   DMX512 to Dual SGM256 Converter                                                                                   
-                                 //										   Version: 2.0
+                                 //										   Version: 3.0
                                  //									  Build date: 26.10.2019
                                  //										  Author: Gabs'e
                                  //										File: DMX2SGM.asm
@@ -1063,6 +1063,7 @@ AVRASM ver. 2.2.8  G:\DMX2SGM\Programm\DMX2SGM\main.asm Mon Mar 29 19:11:00 2021
                                  //	Changelog:		
                                  //				V1.0..........First Release
                                  //				V2.0..........Code cleanup, Fixing a few bugs, General code optimations
+                                 //				V3.0..........Fix MCU randomly rebooting, Fix DMX Address off-by-one
                                  //
                                  //
                                  //***********************************************************************************************
@@ -1110,13 +1111,13 @@ AVRASM ver. 2.2.8  G:\DMX2SGM\Programm\DMX2SGM\main.asm Mon Mar 29 19:11:00 2021
 00000e c0a2                      	RJMP TC1CMA									// Jump to TC1CMA on OC1Aaddr interrupt
                                  
                                  .org UDRE0addr
-000022 c0be                      	RJMP SGM1_INTERRUPT							// Jump to SGM1_INTERRUPT on UDRE0addr interrupt
+000022 c0bf                      	RJMP SGM1_INTERRUPT							// Jump to SGM1_INTERRUPT on UDRE0addr interrupt
                                  
                                  .org URXC1addr
 000028 c08f                      	RJMP DMX_INTERRUPT							// Jump to DMX_INTERRUPT on URXC1addr interrupt
                                  
                                  .org USI_OVFaddr
-000030 c0c6                      	RJMP SGM2_INTERRUPT							// Jump to SGM2_INTERRUPT on USI_OVFaddr interrupt
+000030 c0c7                      	RJMP SGM2_INTERRUPT							// Jump to SGM2_INTERRUPT on USI_OVFaddr interrupt
                                  
                                  
                                  //*****************************Init Controller******************************
@@ -1242,12 +1243,12 @@ AVRASM ver. 2.2.8  G:\DMX2SGM\Programm\DMX2SGM\main.asm Mon Mar 29 19:11:00 2021
                                  	
 000094 e058                      	LDI TEMP,	1<<WDE							// Enable Watchdog Timer @ 16ms
 000095 bf50                      	OUT WDTCSR,	TEMP							// Enable Watchdog Timer @ 16ms
-000096 e050                      	LDI TEMP,	0x00							// Set PortA to input 
-000097 bb50                      	OUT DDRA,	TEMP							// Set PortA to input 
-000098 ef5f                      	LDI TEMP,	0xFF							// Enable PortA pullup
-000099 bb52                      	OUT PUEA,	TEMP							// Enable PortA pullup
-00009a 9863                      	CBI DDRB,	PB3								// Set pin PB3 to input
-00009b 9a73                      	SBI PUEB,	PB3								// Enable pin PB3 pullup
+000096 9863                      	CBI DDRB,	PB3								// Set pin PB3 to input
+000097 9a73                      	SBI PUEB,	PB3								// Enable pin PB3 pullup
+000098 e050                      	LDI TEMP,	0x00							// Set PortA to input 
+000099 bb50                      	OUT DDRA,	TEMP							// Set PortA to input 
+00009a ef5f                      	LDI TEMP,	0xFF							// Enable PortA pullup
+00009b bb52                      	OUT PUEA,	TEMP							// Enable PortA pullup
 00009c ef5f                      	SER TEMP									// Load TEMP with value for XOR
 00009d b02b                      	IN DMX_ADDRESS_L,	PINB					// Read DMX address bit 8 from DIP switch
 00009e 2625                      	EOR DMX_ADDRESS_L,	TEMP					// Invert register
@@ -1344,81 +1345,82 @@ AVRASM ver. 2.2.8  G:\DMX2SGM\Programm\DMX2SGM\main.asm Mon Mar 29 19:11:00 2021
 0000dc 1086                      		CPSE DMX_DATA,	DMX_BYTE_H				// Check startbit
 0000dd cff4                      			RJMP SKIPNEXT							// Jump to SKIPNEXT if startbit is not 0
 0000de 7f0d                      		CBR FLAGS,	1<<DRSB						// Clear DMX Read Start Byte flag
-0000df beaf                      		OUT SREG,	S_SREG_D					// Restore SREG
-0000e0 9518                      		RETI									// Exit interrupt
+0000df 9473                      		INC DMX_BYTE_L							// Increment DMXBYTE L by 1
+0000e0 beaf                      		OUT SREG,	S_SREG_D					// Restore SREG
+0000e1 9518                      		RETI									// Exit interrupt
                                  		
                                  			
                                  //**************************SGM1 Output Interrupt***************************
                                  SGM1_INTERRUPT:
                                  
                                  		// Check for a ongoing SGM transmition. If no ongoing transmistion is present get new data from RAM
-0000e1 b69f                      		IN S_SREG,	SREG						// Save SREG
-0000e2 3020                      		CPI SGM1BIT,	0x00					// Check SGM1BIT
-0000e3 f419                      			BRNE SGM1DETEND							// If SGM1BIT not 0 jump to SGM1DETEND
-0000e4 95aa                      		DEC XL									// Decrement X LSB by 1
-0000e5 900c                      		LD SGM1DATA,	X						// Get data from RAM @  X
-0000e6 e024                      		LDI SGM1BIT,	0x04					// Set SGM1BIT
+0000e2 b69f                      		IN S_SREG,	SREG						// Save SREG
+0000e3 3020                      		CPI SGM1BIT,	0x00					// Check SGM1BIT
+0000e4 f419                      			BRNE SGM1DETEND							// If SGM1BIT not 0 jump to SGM1DETEND
+0000e5 95aa                      		DEC XL									// Decrement X LSB by 1
+0000e6 900c                      		LD SGM1DATA,	X						// Get data from RAM @  X
+0000e7 e024                      		LDI SGM1BIT,	0x04					// Set SGM1BIT
                                  
                                  	SGM1DETEND:
                                  		// Check for SGM end of frame and set sync bit
-0000e7 3021                      		CPI SGM1BIT,	0x01					// Check SGM1BIT
-0000e8 f419                      			BRNE SGM1SEND							// If SGM1BIT not 1 jump to SGM1SEND
-0000e9 30a0                      		CPI XL,	0x00							// Check X LSB
-0000ea f409                      			BRNE SGM1SEND							// If X LSB not 0 jump to SGM1SEND
-0000eb e81a                      		LDI SGMOUTREG,	0x8A					//Load start and sync bit to SGMOUTREG
+0000e8 3021                      		CPI SGM1BIT,	0x01					// Check SGM1BIT
+0000e9 f419                      			BRNE SGM1SEND							// If SGM1BIT not 1 jump to SGM1SEND
+0000ea 30a0                      		CPI XL,	0x00							// Check X LSB
+0000eb f409                      			BRNE SGM1SEND							// If X LSB not 0 jump to SGM1SEND
+0000ec e81a                      		LDI SGMOUTREG,	0x8A					//Load start and sync bit to SGMOUTREG
                                  
                                  	SGM1SEND:
                                  		// Prepare and output SGM data
-0000ec fa07                      		BST SGM1DATA,	7						// Copy SGM2DATA bit 7 to T
-0000ed f916                      		BLD SGMOUTREG,	6						// Copy T to SGMOUTREG bit 1
-0000ee fa06                      		BST SGM1DATA,	6						// Copy SGM2DATA bit 6 to T
-0000ef f912                      		BLD SGMOUTREG,	2						// Copy T to SGMOUTREG bit 5
-0000f0 952a                      		DEC SGM1BIT								// Decrement SGM1BIT
-0000f1 0c00                      		LSL SGM1DATA							// Shift SGM2DATA left by 1 possition
+0000ed fa07                      		BST SGM1DATA,	7						// Copy SGM2DATA bit 7 to T
+0000ee f916                      		BLD SGMOUTREG,	6						// Copy T to SGMOUTREG bit 1
+0000ef fa06                      		BST SGM1DATA,	6						// Copy SGM2DATA bit 6 to T
+0000f0 f912                      		BLD SGMOUTREG,	2						// Copy T to SGMOUTREG bit 5
+0000f1 952a                      		DEC SGM1BIT								// Decrement SGM1BIT
 0000f2 0c00                      		LSL SGM1DATA							// Shift SGM2DATA left by 1 possition
-0000f3 bd10                      		OUT UDR0,	SGMOUTREG					// Output from SGMOUTREG to USART data register
-0000f4 be9f                      		OUT SREG,	S_SREG						// Restore SREG
-0000f5 e818                      		LDI SGMOUTREG,	0x88					// Load startbit to SGMOUTREG for next Interrupt
-0000f6 9518                      		RETI									// Exit interrupt
+0000f3 0c00                      		LSL SGM1DATA							// Shift SGM2DATA left by 1 possition
+0000f4 bd10                      		OUT UDR0,	SGMOUTREG					// Output from SGMOUTREG to USART data register
+0000f5 be9f                      		OUT SREG,	S_SREG						// Restore SREG
+0000f6 e818                      		LDI SGMOUTREG,	0x88					// Load startbit to SGMOUTREG for next Interrupt
+0000f7 9518                      		RETI									// Exit interrupt
                                  
                                  
                                  //**************************SGM2 Output Interrupt***************************
                                  SGM2_INTERRUPT:
                                  
                                  		// Check for a ongoing SGM transmition. If no ongoing transmistion is present get new data from RAM
-0000f7 bd1c                      		OUT USIDR,	SGMOUTREG					// Preload startbyte to USIDR
-0000f8 b69f                      		IN S_SREG,	SREG						// Save SREG
-0000f9 3030                      		CPI SGM2BIT,	0x00					// Check SGM2BIT
-0000fa f419                      			BRNE SGM2DETEND							// If SGM2BIT not 0 jump to SGM2DETEND
-0000fb 95ca                      		DEC YL									// Decrement Y LSB by 1
-0000fc 8018                      		LD SGM2DATA,	Y						// Get data from RAM @ Y
-0000fd e034                      		LDI SGM2BIT,	0x04					// Set SGM2BIT
+0000f8 bd1c                      		OUT USIDR,	SGMOUTREG					// Preload startbyte to USIDR
+0000f9 b69f                      		IN S_SREG,	SREG						// Save SREG
+0000fa 3030                      		CPI SGM2BIT,	0x00					// Check SGM2BIT
+0000fb f419                      			BRNE SGM2DETEND							// If SGM2BIT not 0 jump to SGM2DETEND
+0000fc 95ca                      		DEC YL									// Decrement Y LSB by 1
+0000fd 8018                      		LD SGM2DATA,	Y						// Get data from RAM @ Y
+0000fe e034                      		LDI SGM2BIT,	0x04					// Set SGM2BIT
                                  
                                  	SGM2DETEND:
                                  		// Check for SGM end of frame and set sync bit
-0000fe 3031                      		CPI SGM2BIT,	0x01					// Check SGM2BIT
-0000ff f419                      			BRNE SGM2SEND							// If SGM2BIT not 1 jump to SGM2SEND
-000100 30c0                      		CPI YL,	0x00							// Check Y LSB
-000101 f409                      			BRNE SGM2SEND							// If Y LSB not 0 jump to SGM2SEND
-000102 e81a                      		LDI SGMOUTREG,	0x8A					//Load start and sync bit to SGMOUTREG
+0000ff 3031                      		CPI SGM2BIT,	0x01					// Check SGM2BIT
+000100 f419                      			BRNE SGM2SEND							// If SGM2BIT not 1 jump to SGM2SEND
+000101 30c0                      		CPI YL,	0x00							// Check Y LSB
+000102 f409                      			BRNE SGM2SEND							// If Y LSB not 0 jump to SGM2SEND
+000103 e81a                      		LDI SGMOUTREG,	0x8A					//Load start and sync bit to SGMOUTREG
                                  
                                  	SGM2SEND:
                                  		// Prepare and output SGM data. Correct clock phase to rising edge.
-000103 fa17                      		BST SGM2DATA,	7						// Copy SGM2DATA bit 7 to T
-000104 f916                      		BLD SGMOUTREG,	6						// Copy T to SGMOUTREG bit 1
-000105 fa16                      		BST SGM2DATA,	6						// Copy SGM2DATA bit 6 to T
-000106 f912                      		BLD SGMOUTREG,	2						// Copy T to SGMOUTREG bit 5
-000107 953a                      		DEC SGM2BIT								// Decrement SGM1BIT
-000108 0c11                      		LSL SGM2DATA							// Shift SGM2DATA left by 1 possition
+000104 fa17                      		BST SGM2DATA,	7						// Copy SGM2DATA bit 7 to T
+000105 f916                      		BLD SGMOUTREG,	6						// Copy T to SGMOUTREG bit 1
+000106 fa16                      		BST SGM2DATA,	6						// Copy SGM2DATA bit 6 to T
+000107 f912                      		BLD SGMOUTREG,	2						// Copy T to SGMOUTREG bit 5
+000108 953a                      		DEC SGM2BIT								// Decrement SGM1BIT
 000109 0c11                      		LSL SGM2DATA							// Shift SGM2DATA left by 1 possition
-00010a bd1c                      		OUT USIDR,	SGMOUTREG					// Output from SGMOUTREG to USART data register
-00010b e410                      		LDI SGMOUTREG,	1<<USIOIF | 0			// Reset USI Overflow Flag & Set USI Counter to 0
-00010c 9b39                      		SBIS PINC,	PC1							// Check clock phase
-00010d e411                      			LDI SGMOUTREG,	1<<USIOIF | 1			// Correct clock phase (Interrupt on rising edge, output on falling edge)
-00010e bd1b                      		OUT USISR,	SGMOUTREG					// Output to USISR
-00010f e818                      		LDI SGMOUTREG,	0x88					// Load startbit to SGMOUTREG for next Interrupt
-000110 be9f                      		OUT SREG,	S_SREG						// Restore SREG
-000111 9518                      		RETI									// Exit interrupt
+00010a 0c11                      		LSL SGM2DATA							// Shift SGM2DATA left by 1 possition
+00010b bd1c                      		OUT USIDR,	SGMOUTREG					// Output from SGMOUTREG to USART data register
+00010c e410                      		LDI SGMOUTREG,	1<<USIOIF | 0			// Reset USI Overflow Flag & Set USI Counter to 0
+00010d 9b39                      		SBIS PINC,	PC1							// Check clock phase
+00010e e411                      			LDI SGMOUTREG,	1<<USIOIF | 1			// Correct clock phase (Interrupt on rising edge, output on falling edge)
+00010f bd1b                      		OUT USISR,	SGMOUTREG					// Output to USISR
+000110 e818                      		LDI SGMOUTREG,	0x88					// Load startbit to SGMOUTREG for next Interrupt
+000111 be9f                      		OUT SREG,	S_SREG						// Restore SREG
+000112 9518                      		RETI									// Exit interrupt
                                  		
                                  //******************************Programm End *******************************
                                  
@@ -1427,12 +1429,12 @@ AVRASM ver. 2.2.8  G:\DMX2SGM\Programm\DMX2SGM\main.asm Mon Mar 29 19:11:00 2021
 001ff7 3258
 001ff8 4753
 001ff9 204d
-001ffa 3256
+001ffa 3356
 001ffb 6220
 001ffc 2079
 001ffd 6147
 001ffe 7362
-001fff 6527                      .db "DMX2SGM V2 by Gabs'e"
+001fff 6527                      .db "DMX2SGM V3 by Gabs'e"
                                  
 
 
@@ -1452,7 +1454,7 @@ counted separately from r26..r31 here.
 
 "ATtiny1634" register use summary:
 x  :   1 y  :   1 z  :   2 r0 :   6 r1 :   6 r2 :   8 r3 :   4 r4 :   7 
-r5 :   3 r6 :   6 r7 :   4 r8 :   4 r9 :   7 r10:   6 r11:   1 r12:   1 
+r5 :   3 r6 :   6 r7 :   5 r8 :   4 r9 :   7 r10:   6 r11:   1 r12:   1 
 r13:   1 r14:   1 r15:   1 r16:   9 r17:  16 r18:   6 r19:   6 r20:   4 
 r21:  52 r22:   1 r23:   1 r24:   1 r25:   1 r26:   4 r27:   2 r28:   4 
 r29:   2 r30:   4 r31:   4 
@@ -1468,7 +1470,7 @@ brvs  :   0 bset  :   0 bst   :   6 call  :   0 cbi   :   1 cbr   :   3
 clc   :   0 clh   :   0 cli   :   0 cln   :   0 clr   :  39 cls   :   0 
 clt   :   0 clv   :   0 clz   :   0 com   :   0 cp    :   1 cpc   :   1 
 cpi   :   8 cpse  :   3 dec   :   4 eor   :   4 icall :   0 ijmp  :   0 
-in    :   8 inc   :   2 jmp   :   0 ld    :   2 ldd   :   0 ldi   :  36 
+in    :   8 inc   :   3 jmp   :   0 ld    :   2 ldd   :   0 ldi   :  36 
 lds   :   2 lpm   :   0 lsl   :   4 lsr   :   0 mov   :   0 movw  :   0 
 neg   :   0 nop   :   0 or    :   0 ori   :   0 out   :  24 pop   :   0 
 push  :   0 rcall :   0 ret   :   0 reti  :   7 rjmp  :  14 rol   :   0 
@@ -1482,7 +1484,7 @@ Instructions used: 32 out of 107 (29.9%)
 "ATtiny1634" memory use summary [bytes]:
 Segment   Begin    End      Code   Data   Used    Size   Use%
 ---------------------------------------------------------------
-[.cseg] 0x000000 0x004000    460     20    480   16384   2.9%
+[.cseg] 0x000000 0x004000    462     20    482   16384   2.9%
 [.dseg] 0x000100 0x000100      0      0      0    1024   0.0%
 [.eseg] 0x000000 0x000000      0      0      0     256   0.0%
 

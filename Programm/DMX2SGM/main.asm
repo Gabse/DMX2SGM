@@ -14,7 +14,7 @@
 //***********************************************************************************************                                                                                
 //                                                                                    
 //								   DMX512 to Dual SGM256 Converter                                                                                   
-//										   Version: 2.0
+//										   Version: 3.0
 //									  Build date: 26.10.2019
 //										  Author: Gabs'e
 //										File: DMX2SGM.asm
@@ -42,6 +42,7 @@
 //	Changelog:		
 //				V1.0..........First Release
 //				V2.0..........Code cleanup, Fixing a few bugs, General code optimations
+//				V3.0..........Fix MCU randomly rebooting, Fix DMX Address off-by-one
 //
 //
 //***********************************************************************************************
@@ -221,12 +222,12 @@ clr_ram:
 	
 	LDI TEMP,	1<<WDE							// Enable Watchdog Timer @ 16ms
 	OUT WDTCSR,	TEMP							// Enable Watchdog Timer @ 16ms
+	CBI DDRB,	PB3								// Set pin PB3 to input
+	SBI PUEB,	PB3								// Enable pin PB3 pullup
 	LDI TEMP,	0x00							// Set PortA to input 
 	OUT DDRA,	TEMP							// Set PortA to input 
 	LDI TEMP,	0xFF							// Enable PortA pullup
 	OUT PUEA,	TEMP							// Enable PortA pullup
-	CBI DDRB,	PB3								// Set pin PB3 to input
-	SBI PUEB,	PB3								// Enable pin PB3 pullup
 	SER TEMP									// Load TEMP with value for XOR
 	IN DMX_ADDRESS_L,	PINB					// Read DMX address bit 8 from DIP switch
 	EOR DMX_ADDRESS_L,	TEMP					// Invert register
@@ -323,6 +324,7 @@ DMX_INTERRUPT:
 		CPSE DMX_DATA,	DMX_BYTE_H				// Check startbit
 			RJMP SKIPNEXT							// Jump to SKIPNEXT if startbit is not 0
 		CBR FLAGS,	1<<DRSB						// Clear DMX Read Start Byte flag
+		INC DMX_BYTE_L							// Increment DMXBYTE L by 1
 		OUT SREG,	S_SREG_D					// Restore SREG
 		RETI									// Exit interrupt
 		
@@ -402,6 +404,6 @@ SGM2_INTERRUPT:
 //******************************Programm End *******************************
 
 .org FLASHEND-9
-.db "DMX2SGM V2 by Gabs'e"
+.db "DMX2SGM V3 by Gabs'e"
 
 //********************************File End *********************************
